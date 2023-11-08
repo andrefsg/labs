@@ -1,0 +1,52 @@
+# PowerShell Script to Automate SOC 2 Configurations on Windows 10 Endpoint
+
+# Function to Set Automatic Screen Lock
+function Set-ScreenLock {
+    # Set screen lock timeout (in seconds)
+    $lockTimeout = 900  # 15 minutes
+
+    # Configure screen lock timeout
+    reg add "HKCU\Control Panel\Desktop" /v ScreenSaveTimeOut /t REG_SZ /d $lockTimeout /f
+
+    # Enable screen saver and password protection
+    reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d 1 /f
+    reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v ScreenSaverIsSecure /t REG_SZ /d 1 /f
+
+    # Force a group policy update
+    gpupdate /force
+}
+
+# Function to Install and Configure Antivirus
+function Install-Antivirus {
+    # Replace 'YourAntivirusInstaller.exe' with the actual path to your antivirus installer
+    $antivirusInstaller = 'C:\Path\To\YourAntivirusInstaller.exe'
+
+    # Replace 'YourAntivirusScanCommand' with the command to initiate a scan
+    $antivirusScanCommand = 'YourAntivirusScanCommand'
+
+    # Check if the antivirus software is already installed
+    $antivirusInstalled = Get-ItemProperty -Path "HKLM:\Software\YourAntivirus" -Name DisplayName -ErrorAction SilentlyContinue
+
+    if ($antivirusInstalled -eq $null) {
+        # Install the antivirus software
+        Start-Process -Wait -FilePath $antivirusInstaller
+
+        # Configure antivirus settings (if required)
+
+        # Replace 'YourAntivirusSettingsCommand' with the command to configure antivirus settings
+        $antivirusSettingsCommand = 'YourAntivirusSettingsCommand'
+        Invoke-Expression -Command $antivirusSettingsCommand
+    }
+
+    # Initiate a full system scan
+    Invoke-Expression -Command $antivirusScanCommand
+}
+
+# Call the functions to set screen lock and install/configure antivirus
+Set-ScreenLock
+Install-Antivirus
+
+# Display a completion message
+Write-Host "Automatic screen lock and antivirus installation/scanning configured."
+
+# End of script
