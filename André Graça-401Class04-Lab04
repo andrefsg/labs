@@ -1,1 +1,35 @@
+# 1.1.5 (L1) - Ensure 'Do not use the search-based method when resolving shell shortcuts' is set to 'Enabled'
+$regKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+$regValueName = "NoResolveSearch"
+$regValueData = 1
+
+# Check if the registry key exists before setting the value
+if (Test-Path $regKeyPath) {
+    Set-ItemProperty -Path $regKeyPath -Name $regValueName -Value $regValueData
+}
+else {
+    New-Item -Path $regKeyPath -Force
+    Set-ItemProperty -Path $regKeyPath -Name $regValueName -Value $regValueData
+}
+
+# 18.4.3 (L1) - Ensure 'Do not allow the storage of credentials and .NET passports for network authentication' is set to 'Enabled'
+$regKeyPath2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation"
+$regValueName2 = "DisablePasswordCaching"
+$regValueData2 = 1
+
+# Check if the registry key exists before setting the value
+if (Test-Path $regKeyPath2) {
+    Set-ItemProperty -Path $regKeyPath2 -Name $regValueName2 -Value $regValueData2
+}
+else {
+    try {
+        New-Item -Path $regKeyPath2 -Force
+        Set-ItemProperty -Path $regKeyPath2 -Name $regValueName2 -Value $regValueData2
+    }
+    catch {
+        Write-Host "Error: $_.Exception.Message"
+    }
+}
+
+Write-Host "Configuration completed successfully."
 
